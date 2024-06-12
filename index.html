@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -117,6 +116,46 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* 时间日期容器样式 */
+        .time-container {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
     </style>
     <script>
         function handleFileSelect(event) {
@@ -181,14 +220,38 @@
         function handleSubmit() {
             const link = document.getElementById('manual-input').value;
             if (link) {
-                updateVideo('用户自选链接', link, '');
+                updateVideo('链接验证成功，请点击播放器开始享受', link, '');
             }
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('current-date-time').textContent = `当前日期和时间：${dateString} ${timeString}`;
         }
 
         window.onload = function () {
             document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
             document.getElementById('manual-input').addEventListener('input', handleManualInput, false);
             document.getElementById('submit-button').addEventListener('click', handleSubmit, false);
+
+            // 显示弹窗
+            var modal = document.getElementById("myModal");
+            var span = document.getElementsByClassName("close")[0];
+            modal.style.display = "block";
+            span.onclick = function() {
+                modal.style.display = "none";
+            };
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+
+            // 更新时间和日期
+            updateTime();
+            setInterval(updateTime, 1000); // 每秒更新一次时间
         };
     </script>
 </head>
@@ -211,9 +274,20 @@
 如果有我发布的视频文件，请直接上传；
 如果你有我发布的链接，也可以直接输入到输入框然后点击确定。
 我会不定期在网络冲浪的时候丢下链接，这个网站只是我当作视频播放器的玩意。"></textarea>
+        </div>
+        <div class="video-container">
+            <iframe src="" allowfullscreen></iframe>
+        </div>
     </div>
-    <div class="video-container">
-        <iframe src="" allowfullscreen></iframe>
+    <div class="time-container" id="current-date-time"></div>
+    <!-- 弹窗内容 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>欢迎来到神奇的视频播放器！请注意：本网站仅供个人娱乐用途。<br>
+只有指定的链接才能播放，其他链接输入进去是会报错的；<br>
+本站点借助ChatGPT优化，欢迎大家交流学习~</p>
+        </div>
     </div>
 </body>
 </html>
