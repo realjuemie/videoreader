@@ -8,12 +8,31 @@
         body {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
+        }
+        .navbar {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+        .content {
+            padding-top: 50px; /* 为导航栏留出空间 */
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
         }
         .title {
             margin-bottom: 20px;
@@ -174,18 +193,20 @@
     </script>
 </head>
 <body>
-    <div class="file-input-container">
-        <label for="file-input" class="file-input-label">选择视频文件</label>
-        <input type="file" id="file-input" class="file-input" accept=".txt">
-    </div>
-    <div class="manual-input-container">
-        <input type="text" id="manual-input" class="manual-input" placeholder="在此输入视频链接...">
-        <button id="submit-button" class="submit-button disabled" disabled>确定</button>
-    </div>
-    <select></select>
-    <div class="title">请选择视频</div>
-    <div class="description-container">
-        <textarea class="description" placeholder="使用说明：如果有我发布的视频文件，请直接上传；
+    <div class="navbar">视频播放</div>
+    <div class="content">
+        <div class="file-input-container">
+            <label for="file-input" class="file-input-label">选择视频文件</label>
+            <input type="file" id="file-input" class="file-input" accept=".txt">
+        </div>
+        <div class="manual-input-container">
+            <input type="text" id="manual-input" class="manual-input" placeholder="在此输入视频链接...">
+            <button id="submit-button" class="submit-button disabled" disabled>确定</button>
+        </div>
+        <select></select>
+        <div class="title">请选择视频</div>
+        <div class="description-container">
+            <textarea class="description" placeholder="使用说明：如果有我发布的视频文件，请直接上传；
 如果你有我发布的链接，也可以直接输入到输入框然后点击确定。
 我会不定期在网络冲浪的时候丢下链接，这个网站只是我当作视频播放器的玩意。"></textarea>
     </div>
