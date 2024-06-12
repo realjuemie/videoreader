@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .description-container {
+            margin-bottom: 20px;
+            width: 80%;
+            max-width: 800px;
+        }
+        .description {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+        }
+        .video-container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #000;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+            border-radius: 8px;
+        }
+        select {
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .file-input-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .file-input-label:hover {
+            background-color: #0056b3;
+        }
+        .file-input {
+            display: none;
+        }
+        .manual-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .manual-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: calc(100% - 22px);
+            max-width: 600px;
+        }
+        .submit-button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        .submit-button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+    <script>
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const contents = e.target.result;
+                const lines = contents.split('\n').filter(line => line.trim() !== '');
+                const videoList = [];
+                for (let i = 0; i < lines.length; i += 3) {
+                    videoList.push({ title: lines[i], link: lines[i + 1], description: lines[i + 2] });
+                }
+                populateSelect(videoList);
+            };
+            reader.readAsText(file);
+        }
+
+        function populateSelect(videoList) {
+            const select = document.querySelector('select');
+            select.innerHTML = ''; // 清空之前的选项
+            videoList.forEach((video, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = video.title;
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', (event) => {
+                const selectedIndex = event.target.value;
+                const selectedVideo = videoList[selectedIndex];
+                updateVideo(selectedVideo.title, selectedVideo.link, selectedVideo.description);
+            });
+
+            // Load the first video by default
+            if (videoList.length > 0) {
+                updateVideo(videoList[0].title, videoList[0].link, videoList[0].description);
+            }
+        }
+
+        function updateVideo(title, link, description) {
+            document.querySelector('.title').textContent = title;
+            document.querySelector('iframe').src = link;
+            document.querySelector('.description').value = description;
+        }
+
+        function handleManualInput(event) {
+            const link = event.target.value;
+            const button = document.getElementById('submit-button');
+            if (link.includes('short.ink')) {
+                button.classList.remove('disabled');
+                button.disabled = false;
+            } else {
+                button.classList.add('disabled');
+                button.disabled = true;
+            }
+        }
+
+        function handleSubmit() {
+            const link = document.getElementById('manual-input').value;
+            if (link) {
+                updateVideo('用户自选链接', link, '');
+            }
+        }
+
+        window.onload = function () {
+            document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+            document.getElementById('manual-input').addEventListener('input', handleManualInput, false);
+            document.getElementById('submit-button').addEventListener('click', handleSubmit, false);
+        };
+    </script>
+</head>
+<body>
+    <div class="file-input-container">
+        <label for="file-input" class="file-input-label">选择视频文件</label>
+        <input type="file" id="file-input" class="file-input" accept=".txt">
+    </div>
+    <div class="manual-input-container">
+        <input type="text" id="manual-input" class="manual-input" placeholder="在此输入视频链接...">
+        <button id="submit-button" class="submit-button disabled" disabled>确定</button>
+    </div>
+    <select></select>
+    <div class="title">请选择视频</div>
+    <div class="description-container">
+        <textarea class="description" placeholder="使用说明：如果有我发布的视频文件，请直接上传；
+如果你有我发布的链接，也可以直接输入到输入框然后点击确定。
+我会不定期在网络冲浪的时候丢下链接，这个网站只是我当作视频播放器的玩意。"></textarea>
+    </div>
+    <div class="video-container">
+        <iframe src="" allowfullscreen></iframe>
+    </div>
+</body>
+</html>
