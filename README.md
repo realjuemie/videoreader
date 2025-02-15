@@ -1,3 +1,4 @@
+网页预览：https://realjuemie.github.io/videoreader/
 这个静态网页唯一的作用就是读取https://abyss.to/zh 上传的视频,<br>
 其他链接输入进去是无效的,<br>
 ①目前已知这个网站是一个仅支持视频上传的站点，而且暂时没有被墙，<br>
