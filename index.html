@@ -1,329 +1,31 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一个神奇的视频播放器</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-        .navbar {
-            width: 100%;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            z-index: 1000;
-        }
-        .content {
-            padding-top: 50px; /* 为导航栏留出空间 */
-            flex: 1;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        .title {
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .description-container {
-            margin-bottom: 20px;
-            width: 80%;
-            max-width: 800px;
-        }
-        .description {
-            width: 100%;
-            height: 150px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            resize: none;
-        }
-        .video-container {
-            width: 80%;
-            max-width: 800px;
-            background-color: #000;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px; /* 为按钮留出空间 */
-        }
-        iframe {
-            width: 100%;
-            height: 450px;
-            border: none;
-            border-radius: 8px;
-        }
-        select {
-            margin-bottom: 20px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .file-input-container {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .file-input-label {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .file-input-label:hover {
-            background-color: #0056b3;
-        }
-        .file-input {
-            display: none;
-        }
-        .manual-input-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .manual-input {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            width: calc(100% - 22px);
-            max-width: 600px;
-        }
-        .submit-button {
-            padding: 10px 20px;
-            margin-left: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
-            color: white;
-            cursor: pointer;
-        }
-        .submit-button.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        /* 按钮样式 */
-        .button-container {
-            margin-bottom: 20px;
-        }
-        .action-button {
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .action-button img {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-            margin-right: 5px;
-        }
-        /* 弹窗样式 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        /* 时间日期容器样式 */
-        .time-container {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-    </style>
-    <script>
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) {
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const contents = e.target.result;
-                const lines = contents.split('\n').filter(line => line.trim() !== '');
-                const videoList = [];
-                for (let i = 0; i < lines.length; i += 3) {
-                    videoList.push({ title: lines[i], link: lines[i + 1], description: lines[i + 2] });
-                }
-                populateSelect(videoList);
-            };
-            reader.readAsText(file);
-        }
-
-        function populateSelect(videoList) {
-            const select = document.querySelector('select');
-            select.innerHTML = ''; // 清空之前的选项
-            videoList.forEach((video, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = video.title;
-                select.appendChild(option);
-            });
-
-            select.addEventListener('change', (event) => {
-                const selectedIndex = event.target.value;
-                const selectedVideo = videoList[selectedIndex];
-                updateVideo(selectedVideo.title, selectedVideo.link, selectedVideo.description);
-            });
-
-            // Load the first video by default
-            if (videoList.length > 0) {
-                updateVideo(videoList[0].title, videoList[0].link, videoList[0].description);
-            }
-        }
-
-        function updateVideo(title, link, description) {
-            document.querySelector('.title').textContent = title;
-            document.querySelector('iframe').src = link;
-            document.querySelector('.description').value = description;
-        }
-
-        function handleManualInput(event) {
-            const link = event.target.value;
-            const button = document.getElementById('submit-button');
-            if (link.includes('short.ink')) {
-                button.classList.remove('disabled');
-                button.disabled = false;
-            } else {
-                button.classList.add('disabled');
-                button.disabled = true;
-            }
-        }
-
-        function handleSubmit() {
-            const link = document.getElementById('manual-input').value;
-            if (link) {
-                updateVideo('链接验证成功，请开始享受', link, '');
-            }
-        }
-
-        function updateTime() {
-            const now = new Date();
-            const dateString = now.toLocaleDateString();
-            const timeString = now.toLocaleTimeString();
-            document.getElementById('current-date-time').textContent = `当前日期和时间：${dateString} ${timeString}`;
-        }
-
-        function showModal(imageUrl) {
-            var modal = document.getElementById("imageModal");
-            var modalImg = document.getElementById("modal-img");
-            modal.style.display = "block";
-            modalImg.src = imageUrl;
-        }
-
-        window.onload = function () {
-            document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
-            document.getElementById('manual-input').addEventListener('input', handleManualInput, false);
-            document.getElementById('submit-button').addEventListener('click', handleSubmit, false);
-
-            // 按钮事件监听
-            document.getElementById('appreciation-button').addEventListener('click', function() {
-                showModal('https://i2.mjj.rip/2024/06/13/a7aa1d190d4cc863e6f8ef3667acaa96.png');
-            });
-
-            document.getElementById('red-envelope-button').addEventListener('click', function() {
-                showModal('https://i2.mjj.rip/2024/06/13/c2622e6d82796ddfaaef266baf6d3325.jpeg');
-            });
-
-            // 显示公告弹窗
-            var modal = document.getElementById("myModal");
-            var span = document.getElementsByClassName("close")[0];
-            modal.style.display = "block";
-            span.onclick = function() {
-                modal.style.display = "none";
-            };
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            };
-
-            // 关闭图片弹窗
-            var imgModal = document.getElementById("imageModal");
-            var imgSpan = document.getElementsByClassName("close")[1];
-            imgSpan.onclick = function() {
-                imgModal.style.display = "none";
-            };
-            window.onclick = function(event) {
-                if (event.target == imgModal) {
-                    imgModal.style.display = "none";
-                }
-            };
-
-            // 更新时间和日期
-            updateTime();
-            setInterval(updateTime, 1000); // 每秒更新一次时间
-        };
-    </script>
+    <title>神奇的视频播放器</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="navbar">一个神奇的视频播放器</div>
-    <div class="content">
-        <div class="file-input-container">
+    <header class="navbar">神奇的视频播放器</header>
+    <main class="content">
+        <div class="input-container">
             <label for="file-input" class="file-input-label">选择视频文件</label>
             <input type="file" id="file-input" class="file-input" accept=".txt">
-        </div>
-        <div class="manual-input-container">
             <input type="text" id="manual-input" class="manual-input" placeholder="在此输入视频链接...">
-            <button id="submit-button" class="submit-button disabled" disabled>确定</button>
+            <button id="submit-button" class="submit-button" disabled>确定</button>
         </div>
-        <select></select>
-        <div class="title">请选择视频</div>
+        <select id="video-select"></select>
+        <h1 class="title">请选择视频</h1>
         <div class="description-container">
-            <textarea class="description" placeholder="使用说明：（手机端的播放器可能会有广告）
-部分视频右下角的齿轮可以选择清晰度；
-如果有我发布的视频文件，请直接上传；
-如果你有我发布的链接，也可以直接输入到输入框然后点击确定。
-我会不定期在网络冲浪的时候丢下链接，这个网站只是我当作视频播放器的玩意。"></textarea>
+            <textarea class="description" readonly>使用说明：
+1. 上传视频文件或手动输入链接。
+2. 选择视频后，点击播放。
+3. 部分视频支持清晰度切换。
+            </textarea>
         </div>
         <div class="video-container">
-            <iframe src="" allowfullscreen></iframe>
+            <iframe id="video-frame" src="" allowfullscreen></iframe>
         </div>
         <div class="button-container">
             <button id="appreciation-button" class="action-button">
@@ -333,25 +35,37 @@
                 <img src="https://i2.mjj.rip/2024/06/13/ed44bc1dfebf13f3b4cfd6982c79b12a.png" alt="红包"> 红包
             </button>
         </div>
-    </div>
-    <div class="time-container" id="current-date-time"></div>
+    </main>
+    <footer class="time-container" id="current-date-time"></footer>
+
     <!-- 公告弹窗 -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>欢迎来到神奇的视频播放器！请注意：本网站仅供个人娱乐用途。<br>
-只有指定的链接才能播放，其他链接输入进去是会报错的；<br>
-本站点借助ChatGPT优化，欢迎大家交流学习~<br>
-前两次点击播放器会跳转广告，关掉就行了！！！<br>
-太贵了，买不起去广告的API</p>
-        </div>
+<div id="announcement-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>欢迎来到神奇的视频播放器！请注意：本网站仅供个人娱乐用途。<br>
+        只有指定的链接才能播放，其他链接输入进去是会报错的；<br>
+        本站点借助ChatGPT优化，欢迎大家交流学习~<br>
+        前两次点击播放器会跳转广告，关掉就行了！！！<br>
+        太贵了，买不起去广告的API</p>
     </div>
-    <!-- 图片弹窗 -->
-    <div id="imageModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <img id="modal-img" src="" alt="图片" style="max-width: 100%;">
-        </div>
+</div>
+
+<!-- 验证成功弹窗 -->
+<div id="success-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="success-message"></p>
     </div>
+</div>
+
+<!-- 图片弹窗 -->
+<div id="image-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <img id="modal-image" src="" alt="图片" style="max-width: 100%;">
+    </div>
+</div>
+
+    <script src="script.js"></script>
 </body>
 </html>
