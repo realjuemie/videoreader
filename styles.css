@@ -68,10 +68,13 @@ h1 {
     background-color: #0056b3;
 }
 
+/* 上传容器样式 */
 .upload-container {
     margin-bottom: 1.5rem;
+    text-align: center;
 }
 
+/* 上传按钮样式 */
 .upload-button {
     padding: 0.75rem 1.5rem;
     background-color: #28a745;
@@ -81,12 +84,31 @@ h1 {
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    display: inline-block; /* 确保按钮居中 */
+    width: 100%; /* 手机端按钮占满宽度 */
+    box-sizing: border-box; /* 防止 padding 影响宽度 */
 }
 
 .upload-button:hover {
     background-color: #218838;
 }
 
+/* 隐藏默认的文件输入框 */
+#file-upload {
+    display: none;
+}
+
+/* 手机端适配 */
+@media (max-width: 480px) {
+    .upload-container {
+        padding: 0 1rem; /* 增加左右内边距 */
+    }
+
+    .upload-button {
+        font-size: 0.9rem; /* 减小字体大小 */
+        padding: 0.5rem 1rem; /* 调整内边距 */
+    }
+}
 .video-container {
     position: relative;
     padding-bottom: 56.25%; /* 16:9 比例 */
