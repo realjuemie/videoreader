@@ -75,3 +75,20 @@ function updateTime() {
 
 setInterval(updateTime, 1000);
 updateTime();
+
+const iframe = document.getElementById('video-frame');
+iframe.addEventListener('load', function () {
+    const iframeWindow = iframe.contentWindow;
+
+    // 拦截 beforeunload 事件（防止页面跳转）
+    iframeWindow.addEventListener('beforeunload', function (e) {
+        e.preventDefault();
+        e.returnValue = ''; // 兼容某些浏览器
+    });
+
+    // 拦截新窗口打开
+    iframeWindow.open = function () {
+        console.log('拦截了新窗口打开');
+        return null;
+    };
+});
