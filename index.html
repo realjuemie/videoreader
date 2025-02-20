@@ -3,69 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>神奇的视频播放器</title>
+    <title>视频播放器</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="navbar">神奇的视频播放器</header>
-    <main class="content">
+    <div class="container">
+        <h1>视频播放器</h1>
         <div class="input-container">
-            <label for="file-input" class="file-input-label">选择视频文件</label>
-            <input type="file" id="file-input" class="file-input" accept=".txt">
-            <input type="text" id="manual-input" class="manual-input" placeholder="在此输入视频链接...">
-            <button id="submit-button" class="submit-button" disabled>确定</button>
+            <input type="text" id="video-url" placeholder="请输入视频链接">
+            <button id="play-btn">播放</button>
         </div>
-        <select id="video-select"></select>
-        <h1 class="title">请选择视频</h1>
-        <div class="description-container">
-            <textarea class="description" readonly>使用说明：
-1. 上传视频文件或手动输入链接。
-2. 选择视频后，点击播放。
-3. 部分视频支持清晰度切换。
-            </textarea>
+        <div class="upload-container">
+            <input type="file" id="file-upload" accept=".txt">
+            <label for="file-upload" class="upload-button">上传播放列表</label>
         </div>
         <div class="video-container">
-            <iframe id="video-frame" src="" allowfullscreen></iframe>
+            <iframe id="video-frame" src="" frameborder="0" allowfullscreen></iframe>
         </div>
-        <div class="button-container">
-            <button id="appreciation-button" class="action-button">
-                <img src="https://i2.mjj.rip/2024/06/13/6d26555363aad4b6c5f97500b4683ee3.png" alt="赞赏"> 赞赏
-            </button>
-            <button id="red-envelope-button" class="action-button">
-                <img src="https://i2.mjj.rip/2024/06/13/ed44bc1dfebf13f3b4cfd6982c79b12a.png" alt="红包"> 红包
-            </button>
+        <div class="playlist-container">
+            <h2>播放列表</h2>
+            <ul id="playlist"></ul>
         </div>
-    </main>
-    <footer class="time-container" id="current-date-time"></footer>
-
-    <!-- 公告弹窗 -->
-<div id="announcement-modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>欢迎来到神奇的视频播放器！请注意：本网站仅供个人娱乐用途。<br>
-        只有指定的链接才能播放，其他链接输入进去是会报错的；<br>
-        本站点借助ChatGPT优化，欢迎大家交流学习~<br>
-        前两次点击播放器会跳转广告，关掉就行了！！！<br>
-        太贵了，买不起去广告的API</p>
-    </div>
+        <div class="footer">
+    <button id="appreciate-button" class="action-button">
+        <img src="https://i2.mjj.rip/2024/06/13/6d26555363aad4b6c5f97500b4683ee3.png" alt="赞赏"> 赞赏
+    </button>
+    <button id="red-envelope-button" class="action-button">
+        <img src="https://i2.mjj.rip/2024/06/13/ed44bc1dfebf13f3b4cfd6982c79b12a.png" alt="红包"> 红包
+    </button>
+    <div id="current-time"></div>
 </div>
 
-<!-- 验证成功弹窗 -->
-<div id="success-modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p id="success-message"></p>
-    </div>
-</div>
-
-<!-- 图片弹窗 -->
+<!-- 弹窗结构 -->
 <div id="image-modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <img id="modal-image" src="" alt="图片" style="max-width: 100%;">
-    </div>
+    <span class="close">&times;</span>
+    <img id="modal-image" class="modal-content" src="" alt="弹窗图片">
 </div>
-
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
